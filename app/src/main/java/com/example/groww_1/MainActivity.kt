@@ -15,16 +15,16 @@ import com.example.groww_1.Theme.Groww_1Theme
 import com.example.groww_1.navigation.AppNavGraph
 import com.example.groww_1.navigation.Screen
 import dagger.hilt.android.AndroidEntryPoint
-import  com.example.groww_1.navigation.AppNavGraph
+import com.example.groww_1.watchlist.WatchlistViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val themeViewModel: ThemeViewModel = viewModel() // ✅ Shared instance
+            val themeViewModel: ThemeViewModel = viewModel()
             Groww_1Theme(themeViewModel = themeViewModel) {
-                MainScreen(themeViewModel=themeViewModel)
+                MainScreen(themeViewModel)
             }
         }
     }
@@ -35,7 +35,7 @@ fun MainScreen(themeViewModel: ThemeViewModel) {
     val navController = rememberNavController()
     val bottomScreens = listOf(Screen.Explore, Screen.Watchlist)
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-
+    val watchlistViewModel: WatchlistViewModel = hiltViewModel()
     Scaffold(
         bottomBar = {
             if (currentRoute in bottomScreens.map { it.name }) {
@@ -63,7 +63,8 @@ fun MainScreen(themeViewModel: ThemeViewModel) {
         AppNavGraph(
             navController = navController,
             modifier = Modifier.padding(innerPadding),
-            themeViewModel = themeViewModel // ✅ Pass it to all screens
+            themeViewModel = themeViewModel ,
+            watchlistViewModel = watchlistViewModel
         )
     }
 }

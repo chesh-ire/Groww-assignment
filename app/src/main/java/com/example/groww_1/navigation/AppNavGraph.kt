@@ -2,7 +2,6 @@ package com.example.groww_1.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,9 +22,9 @@ enum class Screen {
 fun AppNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    themeViewModel: ThemeViewModel
+    themeViewModel: ThemeViewModel,
+    watchlistViewModel: WatchlistViewModel
 ) {
-    val watchlistViewModel: WatchlistViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
@@ -33,19 +32,23 @@ fun AppNavGraph(
         modifier = modifier
     ) {
         composable(Screen.Explore.name) {
-            ExploreScreen(navController)
+
+            ExploreScreen(
+                navController = navController,
+                themeViewModel = themeViewModel
+            )
         }
         composable(Screen.Watchlist.name) {
             WatchlistScreen(
                 navController = navController,
-                viewModel = watchlistViewModel // ✅ shared ViewModel
+                viewModel = watchlistViewModel
             )
         }
         composable("details/{symbol}") { backStackEntry ->
             val symbol = backStackEntry.arguments?.getString("symbol") ?: return@composable
             DetailScreen(
                 symbol = symbol,
-                watchlistViewModel = watchlistViewModel // ✅ shared ViewModel
+                watchlistViewModel = watchlistViewModel
             )
         }
         composable("all_gainers") {
@@ -54,5 +57,6 @@ fun AppNavGraph(
         composable("all_losers") {
             AllLosersScreen(navController)
         }
+
     }
 }

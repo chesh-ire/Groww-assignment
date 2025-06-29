@@ -1,6 +1,6 @@
 package com.example.groww_1.explore
 
-import androidx.compose.foundation.background
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.groww_1.ThemeViewModel
 import com.example.groww_1.model.StockGainItem
@@ -27,15 +26,13 @@ import com.example.groww_1.model.StockGainItem
 fun ExploreScreen(
     navController: NavHostController,
     viewModel: ExploreViewModel = hiltViewModel(),
-    themeViewModel: ThemeViewModel = hiltViewModel()
+    themeViewModel: ThemeViewModel
 ) {
     val gainers by viewModel.topGainers.collectAsState()
     val losers by viewModel.topLosers.collectAsState()
     val isDarkMode by themeViewModel.isDarkMode.collectAsState()
 
     LaunchedEffect(Unit) {
-       // viewModel.loadTopGainers()
-       // viewModel.loadTopLosers()
         viewModel.loadAllStocks()
     }
 
@@ -62,7 +59,7 @@ fun ExploreScreen(
 
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background // Fixes your top app bar visibility issue
+                    containerColor = MaterialTheme.colorScheme.background
                 )
 
             )
@@ -85,6 +82,7 @@ fun ExploreScreen(
 
             SectionTitle(title = "Top Losers") {
                 navController.navigate("all_losers")
+
             }
 
             StockGrid(losers, navController, Color(0xFFF10404))
@@ -105,11 +103,11 @@ fun SectionTitle(title: String, onViewAllClick: () -> Unit) {
         Text(
             title,
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onBackground
         )
         Text(
             "View All",
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.clickable { onViewAllClick() }
         )
     }
@@ -159,3 +157,7 @@ fun StockGrid(
         }
     }
 }
+
+
+
+

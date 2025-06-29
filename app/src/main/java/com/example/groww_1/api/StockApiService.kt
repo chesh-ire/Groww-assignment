@@ -18,7 +18,7 @@ interface StockApiService {
         @Query("apikey") apiKey: String = BuildConfig.ALPHA_API_KEY
     ): Response<CompanyOverviewResponse>
 
-    // Add other endpoints like top gainers/losers similarly
+
     @GET("query")
     suspend fun getDailyTimeSeries(
         @Query("function") function: String = "TIME_SERIES_DAILY",

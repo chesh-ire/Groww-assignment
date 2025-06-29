@@ -22,7 +22,7 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun Groww_1Theme(
-    themeViewModel: ThemeViewModel, // ✅ Using passed ViewModel
+    themeViewModel: ThemeViewModel,
     content: @Composable () -> Unit
 ) {
     val isDarkMode by themeViewModel.isDarkMode.collectAsState()

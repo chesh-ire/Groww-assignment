@@ -1,6 +1,6 @@
 package com.example.groww_1.explore
 
-import android.util.Log
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.groww_1.model.CompanyOverviewResponse
@@ -29,24 +29,10 @@ class ExploreViewModel @Inject constructor(
     private val _topLosers = MutableStateFlow<List<StockGainItem>>(emptyList())
     val topLosers: StateFlow<List<StockGainItem>> = _topLosers
 
-    fun fetchSampleStock() {
-        viewModelScope.launch {
-            try {
-                val response = repository.getCompanyOverview("MSFT")
-                if (response.isSuccessful) {
-                    _stock.value = response.body()
-                } else {
-                    Log.e("ExploreViewModel", "API Error: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                Log.e("ExploreViewModel", "Crash: ${e.localizedMessage}", e)
-            }
-        }
-    }
 
     fun loadAllStocks() {
         viewModelScope.launch {
-            val symbols = listOf("AAPL")//, "MSFT", "GOOGL", "META", "AMZN",)// "TSLA", "NFLX", "NVDA", "ORCL", "INTC")
+            val symbols = listOf("AAPL", "MSFT", "GOOGL", "META", "AMZN", "TSLA", "NFLX", "NVDA", "ORCL", "INTC")
             val result = symbols.mapNotNull { repository.getGainerData(it) }
 
             _allStockChanges.value = result

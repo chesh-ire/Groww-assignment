@@ -9,7 +9,6 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.*
 
 @Composable
@@ -26,7 +25,7 @@ fun StockLineChart(
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
 
-                // Prepare entries
+
                 val entries = dataPoints.mapIndexed { index, value ->
                     Entry(index.toFloat(), value)
                 }
@@ -36,39 +35,39 @@ fun StockLineChart(
                     setCircleColor(Color.MAGENTA)
                     lineWidth = 2f
                     circleRadius = 4f
-                    valueTextColor = Color.TRANSPARENT // Hide value dots
+                    valueTextColor = Color.TRANSPARENT
                     setDrawValues(false)
                     mode = LineDataSet.Mode.CUBIC_BEZIER
                 }
 
                 data = LineData(dataSet)
 
-                // Chart Background and Grid Styling
-                setBackgroundColor(Color.parseColor("#131334")) // Match app dark background
-                axisRight.isEnabled = false // Hide right axis
 
-                // X Axis
+                setBackgroundColor(Color.parseColor("#131334"))
+                axisRight.isEnabled = false
+
+
                 xAxis.apply {
                     position = XAxis.XAxisPosition.BOTTOM
                     textColor = Color.WHITE
                     setDrawGridLines(false)
                 }
 
-                // Y Axis (Left)
+
                 axisLeft.apply {
                     textColor = Color.WHITE
                     setDrawGridLines(true)
                     gridColor = Color.GRAY
                 }
 
-                // Legend
+
                 legend.apply {
                     textColor = Color.LTGRAY
                     textSize = 12f
                     form = Legend.LegendForm.LINE
                 }
 
-                // Description
+
                 description = Description().apply {
                     text = ""
                 }

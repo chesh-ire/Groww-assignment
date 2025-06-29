@@ -32,7 +32,6 @@ class StockRepository @Inject constructor(
         return null
     }
 
-    // Optional, if you want to expose just the raw response
     suspend fun getDailyTimeSeries(symbol: String) =
         api.getDailyTimeSeries(symbol = symbol)
 }

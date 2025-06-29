@@ -3,7 +3,6 @@ package com.example.groww_1.detail
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -14,6 +13,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.groww_1.chart.StockLineChart
 import com.example.groww_1.watchlist.WatchlistItem
 import com.example.groww_1.watchlist.WatchlistViewModel
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.outlined.BookmarkBorder
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,17 +41,18 @@ fun DetailScreen(
                 title = {
                     Text(
                         "$symbol Overview",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
                     )
                 },
                 actions = {
                     IconButton(onClick = { showBottomSheet = true }) {
                         Icon(
-                            imageVector = Icons.Default.BookmarkBorder,
-                            contentDescription = "Add to Watchlist",
-                            tint = MaterialTheme.colorScheme.background
+                            imageVector = if (alreadyAdded) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
+                            contentDescription = if (alreadyAdded) "In Watchlist" else "Add to Watchlist",
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
+
                     }
                 }
             )
@@ -67,44 +70,46 @@ fun DetailScreen(
                 stock?.let {
                     Text(
                         "Name: ${it.name}",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.titleMedium
                     )
-                    Text("Sector: ${it.sector}", color = Color.White)
-                    Text("Industry: ${it.industry}", color = Color.White)
+                    Text("Sector: ${it.sector}", color = MaterialTheme.colorScheme.onBackground)
+                    Text("Industry: ${it.industry}", color = MaterialTheme.colorScheme.onBackground)
                     Spacer(modifier = Modifier.height(24.dp))
                 }
-
                 if (priceHistory.isNotEmpty()) {
-                    Text(
-                        "Price History (Last 10 days)",
-                        color = Color.White,
-                        style = MaterialTheme.typography.titleMedium
+                Text(
+                    "Price History (Last 10 days)",
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                ) {
+
+                    StockLineChart(
+                        dataPoints = priceHistory,
+                        modifier = Modifier.fillMaxSize()
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(500.dp)
-                            //.padding(top = 8.dp)
-                            //.background(Color.White)
-                    ) {
-                        StockLineChart(dataPoints = priceHistory)
-                    }
-                } else {
-                    Text("Loading chart data...", color = MaterialTheme.colorScheme.background)
                 }
+                } else{
+                    Text(
+                        "Loading chart data...",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
             }
 
-            Button(
-                onClick = { showBottomSheet = true },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5EF38F))
-            ) {
-                Text("Add to Watchlist", color = MaterialTheme.colorScheme.background)
+
+
             }
         }
-    }
+        }
+
 
     if (showBottomSheet) {
         WatchlistBottomSheet(
@@ -130,19 +135,48 @@ fun WatchlistBottomSheet(
     onDismiss: () -> Unit,
     onConfirmAdd: (WatchlistItem) -> Unit
 ) {
+    var customName by remember { mutableStateOf("") }
+
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
         ) {
-            Text("Add to Watchlist", style = MaterialTheme.typography.titleLarge)
+            Text(
+                "Add to Watchlist",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
 
             if (alreadyAdded) {
-                Text("$symbol is already in your watchlist.")
+                Text(
+                    "$symbol is already in your watchlist.",
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             } else {
-                Text("Do you want to add $symbol to your watchlist?")
+                Text(
+                    "Enter watchlist name (optional):",
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextField(
+                    value = customName,
+                    onValueChange = { customName = it },
+                    placeholder = { Text("E.g. Tech Stocks") },
+                    singleLine = true,
+                    colors = TextFieldDefaults.textFieldColors(
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
+
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -151,15 +185,23 @@ fun WatchlistBottomSheet(
                 onClick = {
                     if (!alreadyAdded) {
                         onConfirmAdd(
-                            WatchlistItem(symbol = symbol, name = stockName ?: symbol)
+                            WatchlistItem(
+                                symbol = symbol,
+                                name = if (customName.isNotBlank()) customName else stockName ?: symbol
+                            )
                         )
                     }
                     onDismiss()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(if (alreadyAdded) "Dismiss" else "Add")
+                Text(
+                    text = if (alreadyAdded) "Dismiss" else "Add",
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     }
 }
+
+

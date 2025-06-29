@@ -19,7 +19,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // Inject your API key here (replace with actual key)
-        buildConfigField("String", "ALPHA_API_KEY", "\"0LCAUZM5GM2X4S91\"")
+        buildConfigField("String", "ALPHA_API_KEY", "\"API_KEY\"")
     }
 
     buildTypes {

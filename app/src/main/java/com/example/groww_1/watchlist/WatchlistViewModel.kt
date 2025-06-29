@@ -1,15 +1,17 @@
 package com.example.groww_1.watchlist
 
-//package com.example.groww_1.viewmodel
+
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 data class WatchlistItem(val symbol: String, val name: String)
-
-class WatchlistViewModel : ViewModel() {
+@HiltViewModel
+class WatchlistViewModel @Inject constructor() : ViewModel() {
 
     private val _watchlist = MutableStateFlow<List<WatchlistItem>>(emptyList())
     val watchlist: StateFlow<List<WatchlistItem>> = _watchlist
@@ -21,7 +23,5 @@ class WatchlistViewModel : ViewModel() {
         }
     }
 
-    fun removeFromWatchlist(symbol: String) {
-        _watchlist.update { current -> current.filterNot { it.symbol == symbol } }
-    }
+
 }
