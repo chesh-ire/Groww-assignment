@@ -1,0 +1,57 @@
+package com.example.groww_1.explore
+
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.groww_1.model.CompanyOverviewResponse
+import com.example.groww_1.model.StockGainItem
+import com.example.groww_1.repository.StockRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class ExploreViewModel @Inject constructor(
+    private val repository: StockRepository
+) : ViewModel() {
+
+    private val _stock = MutableStateFlow<CompanyOverviewResponse?>(null)
+    val stock: StateFlow<CompanyOverviewResponse?> = _stock
+
+    private val _allStockChanges = MutableStateFlow<List<StockGainItem>>(emptyList())
+    val allStockChanges: StateFlow<List<StockGainItem>> = _allStockChanges
+
+    private val _topGainers = MutableStateFlow<List<StockGainItem>>(emptyList())
+    val topGainers: StateFlow<List<StockGainItem>> = _topGainers
+
+    private val _topLosers = MutableStateFlow<List<StockGainItem>>(emptyList())
+    val topLosers: StateFlow<List<StockGainItem>> = _topLosers
+
+    fun fetchSampleStock() {
+        viewModelScope.launch {
+            try {
+                val response = repository.getCompanyOverview("MSFT")
+                if (response.isSuccessful) {
+                    _stock.value = response.body()
+                } else {
+                    Log.e("ExploreViewModel", "API Error: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("ExploreViewModel", "Crash: ${e.localizedMessage}", e)
+            }
+        }
+    }
+
+    fun loadAllStocks() {
+        viewModelScope.launch {
+            val symbols = listOf("AAPL")//, "MSFT", "GOOGL", "META", "AMZN",)// "TSLA", "NFLX", "NVDA", "ORCL", "INTC")
+            val result = symbols.mapNotNull { repository.getGainerData(it) }
+
+            _allStockChanges.value = result
+            _topGainers.value = result.filter { it.gainPercent > 0 }.sortedByDescending { it.gainPercent }.take(3)
+            _topLosers.value = result.filter { it.gainPercent < 0 }.sortedBy { it.gainPercent }.take(3)
+        }
+    }
+}
